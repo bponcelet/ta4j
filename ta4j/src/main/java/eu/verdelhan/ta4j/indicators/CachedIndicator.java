@@ -70,6 +70,11 @@ public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
             return calculate(index);
         }
 
+        if(index == series.getEnd()) {
+            // Do not cache latest index as live trading could still change content
+            return  calculate(index);
+        }
+
         // Series is not null
         
         final int removedTicksCount = series.getRemovedTicksCount();
