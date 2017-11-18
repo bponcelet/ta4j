@@ -20,38 +20,35 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package eu.verdelhan.ta4j.indicators.simple;
+package eu.verdelhan.ta4j.indicators.helpers;
 
-import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.Decimal;
+import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.indicators.CachedIndicator;
 
 /**
- * Difference indicator.
+ * Average loss indicator.
  * <p>
- * I.e.: first - second
  */
-public class DifferenceIndicator extends CachedIndicator<Decimal> {
+public class DetrenderIndicator extends CachedIndicator<Decimal> {
+    private final int timeFrame;
 
-    private Indicator<Decimal> first;
+    private final Indicator<Decimal> indicator;
 
-    private Indicator<Decimal> second;
 
-    /**
-     * Constructor.
-     * (first minus second)
-     * @param first the first indicator
-     * @param second the second indicator
-     */
-    public DifferenceIndicator(Indicator<Decimal> first, Indicator<Decimal> second) {
-        // TODO: check if first series is equal to second one
-        super(first);
-        this.first = first;
-        this.second = second;
+    public DetrenderIndicator(Indicator<Decimal> indicator) {
+        this(indicator, 1);
+    }
+
+    public DetrenderIndicator(Indicator<Decimal> indicator, int timeFrame) {
+        super(indicator);
+        this.indicator = indicator;
+        this.timeFrame = timeFrame;
     }
 
     @Override
     protected Decimal calculate(int index) {
-        return first.getValue(index).minus(second.getValue(index));
+        final int previousIndex = Math.max(0, index - timeFrame);
+        return indicator.getValue(index).minus(indicator.getValue(previousIndex));
     }
 }

@@ -22,8 +22,8 @@
  */
 package eu.verdelhan.ta4j.indicators.simple;
 
-import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.Decimal;
+import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.indicators.CachedIndicator;
 
 /**
@@ -31,7 +31,7 @@ import eu.verdelhan.ta4j.indicators.CachedIndicator;
  * <p>
  * I.e.: first - second
  */
-public class DifferenceIndicator extends CachedIndicator<Decimal> {
+public class DivisionIndicator extends CachedIndicator<Decimal> {
 
     private Indicator<Decimal> first;
 
@@ -43,7 +43,7 @@ public class DifferenceIndicator extends CachedIndicator<Decimal> {
      * @param first the first indicator
      * @param second the second indicator
      */
-    public DifferenceIndicator(Indicator<Decimal> first, Indicator<Decimal> second) {
+    public DivisionIndicator(Indicator<Decimal> first, Indicator<Decimal> second) {
         // TODO: check if first series is equal to second one
         super(first);
         this.first = first;
@@ -52,6 +52,6 @@ public class DifferenceIndicator extends CachedIndicator<Decimal> {
 
     @Override
     protected Decimal calculate(int index) {
-        return first.getValue(index).minus(second.getValue(index));
+        return first.getValue(index).dividedBy(second.getValue(index));
     }
 }

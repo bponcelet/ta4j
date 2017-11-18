@@ -94,17 +94,23 @@ public class Trade implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Trade) {
-            Trade t = (Trade) obj;
-            return entry.equals(t.getEntry()) && exit.equals(t.getExit());
-        }
-        return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Trade trade = (Trade) o;
+
+        if (entry != null ? !entry.equals(trade.entry) : trade.entry != null) return false;
+        if (exit != null ? !exit.equals(trade.exit) : trade.exit != null) return false;
+        return startingType == trade.startingType;
     }
 
     @Override
     public int hashCode() {
-        return (entry.hashCode() * 31) + (exit.hashCode() * 17);
+        int result = entry != null ? entry.hashCode() : 0;
+        result = 31 * result + (exit != null ? exit.hashCode() : 0);
+        result = 31 * result + (startingType != null ? startingType.hashCode() : 0);
+        return result;
     }
 
     /**

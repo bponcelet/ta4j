@@ -22,36 +22,36 @@
  */
 package eu.verdelhan.ta4j.indicators.simple;
 
-import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.Decimal;
+import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.indicators.CachedIndicator;
 
 /**
- * Difference indicator.
+ * Maximum price indicator.
  * <p>
- * I.e.: first - second
  */
-public class DifferenceIndicator extends CachedIndicator<Decimal> {
+public class DegreesIndicator extends CachedIndicator<Decimal> {
 
-    private Indicator<Decimal> first;
+    private Indicator<Decimal> indicator;
 
-    private Indicator<Decimal> second;
+    private int timeFrame;
 
-    /**
-     * Constructor.
-     * (first minus second)
-     * @param first the first indicator
-     * @param second the second indicator
-     */
-    public DifferenceIndicator(Indicator<Decimal> first, Indicator<Decimal> second) {
-        // TODO: check if first series is equal to second one
-        super(first);
-        this.first = first;
-        this.second = second;
+    public DegreesIndicator(Indicator<Decimal> indicator) {
+        this(indicator, 1);
+    }
+
+    public DegreesIndicator(Indicator<Decimal> indicator, int timeFrame) {
+        super(indicator);
+        this.indicator = indicator;
+        this.timeFrame = timeFrame;
     }
 
     @Override
     protected Decimal calculate(int index) {
-        return first.getValue(index).minus(second.getValue(index));
+        Decimal y1 = indicator.getValue(Math.max(0, index - 1));
+        Decimal y2 = indicator.getValue(index);
+        Decimal slope = (y2.minus(y1)).dividedBy(Decimal.valueOf(timeFrame));
+        double angrad = Math.atan(slope.toDouble());
+        return Decimal.valueOf(Math.toDegrees(angrad));
     }
 }

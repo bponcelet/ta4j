@@ -44,7 +44,7 @@ public class AverageGainIndicator extends CachedIndicator<Decimal> {
 
     @Override
     protected Decimal calculate(int index) {
-        final int realTimeFrame = Math.min(timeFrame, index + 1);
+        final int realTimeFrame = Math.max(timeFrame, index + 1);
         return cumulatedGains.getValue(index).dividedBy(Decimal.valueOf(realTimeFrame));
     }
 }

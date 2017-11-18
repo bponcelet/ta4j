@@ -22,30 +22,37 @@
  */
 package eu.verdelhan.ta4j.trading.rules;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Trade;
 import eu.verdelhan.ta4j.TradingRecord;
 import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A stop-loss rule.
  * <p>
  * Satisfied when the close price reaches the loss threshold.
  */
-public class StopLossRule extends AbstractRule {
+public class DynamicStopLossRule extends AbstractRule {
 
     /** The close price indicator */
     private ClosePriceIndicator closePrice;
 
-    /** The loss distance (e.g. 0.0005 for 5pips)*/
+    /** The loss distance */
     private Decimal distance;
+
+    private Trade activeTrade;
+    private Decimal currentLimit;
 
     /**
      * Constructor.
      * @param closePrice the close price indicator
      * @param distance the loss value ex: 0.0005
      */
-    public StopLossRule(ClosePriceIndicator closePrice, Decimal distance) {
+    public DynamicStopLossRule(ClosePriceIndicator closePrice, Decimal distance) {
         this.closePrice = closePrice;
         this.distance = distance;
     }
@@ -56,13 +63,32 @@ public class StopLossRule extends AbstractRule {
         // No trading history or no trade opened, no loss
         if (tradingRecord != null) {
             Trade currentTrade = tradingRecord.getCurrentTrade();
+            Boolean isBuy = currentTrade.getEntry().isBuy();
             if (currentTrade.isOpened()) {
-                Decimal entryPrice = currentTrade.getEntry().getPrice();
                 Decimal currentPrice = closePrice.getValue(index);
-                if(currentTrade.getEntry().isBuy()) {
-                    satisfied = currentPrice.isLessThanOrEqual(entryPrice.minus(distance));
+                Decimal entryPrice = currentTrade.getEntry().getPrice();
+                if(activeTrade == null || !activeTrade.equals(currentTrade)) {
+                    currentLimit = Decimal.NaN;
+                }
+                if(activeTrade != null && activeTrade.equals(currentTrade)) {
+                    if(isBuy && currentPrice.minus(distance).isGreaterThan(currentLimit)) {
+                        currentLimit = currentPrice.minus(distance);
+                    } else if (!isBuy && currentPrice.plus(distance).isGreaterThan(currentLimit)){
+                        currentLimit = currentPrice.plus(distance);
+                    }
                 } else {
-                    satisfied = currentPrice.isGreaterThanOrEqual(entryPrice.plus(distance));
+                    if(currentTrade.getEntry().isBuy()) {
+                        currentLimit = currentTrade.getEntry().getPrice().minus(distance);
+                    } else {
+                        currentLimit = currentTrade.getEntry().getPrice().plus(distance);
+                    }
+                    activeTrade = currentTrade;
+                }
+
+                if(isBuy) {
+                    satisfied = currentPrice.isLessThanOrEqual(currentLimit);
+                } else {
+                    satisfied = currentPrice.isGreaterThanOrEqual(currentLimit);
                 }
             }
         }

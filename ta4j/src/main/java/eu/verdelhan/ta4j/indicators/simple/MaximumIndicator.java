@@ -22,16 +22,16 @@
  */
 package eu.verdelhan.ta4j.indicators.simple;
 
-import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.Decimal;
+import eu.verdelhan.ta4j.Indicator;
+import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.indicators.CachedIndicator;
 
 /**
- * Difference indicator.
+ * Maximum price indicator.
  * <p>
- * I.e.: first - second
  */
-public class DifferenceIndicator extends CachedIndicator<Decimal> {
+public class MaximumIndicator extends CachedIndicator<Decimal> {
 
     private Indicator<Decimal> first;
 
@@ -43,8 +43,7 @@ public class DifferenceIndicator extends CachedIndicator<Decimal> {
      * @param first the first indicator
      * @param second the second indicator
      */
-    public DifferenceIndicator(Indicator<Decimal> first, Indicator<Decimal> second) {
-        // TODO: check if first series is equal to second one
+    public MaximumIndicator(Indicator<Decimal> first, Indicator<Decimal> second) {
         super(first);
         this.first = first;
         this.second = second;
@@ -52,6 +51,6 @@ public class DifferenceIndicator extends CachedIndicator<Decimal> {
 
     @Override
     protected Decimal calculate(int index) {
-        return first.getValue(index).minus(second.getValue(index));
+        return first.getValue(index).max(second.getValue(index));
     }
 }

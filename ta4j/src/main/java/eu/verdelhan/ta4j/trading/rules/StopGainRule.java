@@ -36,18 +36,18 @@ public class StopGainRule extends AbstractRule {
 
     /** The close price indicator */
     private ClosePriceIndicator closePrice;
-    
-    /** The gain ratio threshold (e.g. 1.03 for 3%) */
-    private Decimal gainRatioThreshold;
+
+    /** The loss distance (e.g. 0.0005 for 5pips)*/
+    private Decimal distance;
 
     /**
      * Constructor.
      * @param closePrice the close price indicator
-     * @param gainPercentage the gain percentage
+     * @param distance the gain value ex: 0.0005 for 5 pips
      */
-    public StopGainRule(ClosePriceIndicator closePrice, Decimal gainPercentage) {
+    public StopGainRule(ClosePriceIndicator closePrice, Decimal distance) {
         this.closePrice = closePrice;
-        this.gainRatioThreshold = Decimal.HUNDRED.plus(gainPercentage).dividedBy(Decimal.HUNDRED);
+        this.distance = distance;
     }
 
     @Override
@@ -59,7 +59,11 @@ public class StopGainRule extends AbstractRule {
             if (currentTrade.isOpened()) {
                 Decimal entryPrice = currentTrade.getEntry().getPrice();
                 Decimal currentPrice = closePrice.getValue(index);
-                satisfied = currentPrice.isGreaterThanOrEqual(entryPrice.multipliedBy(gainRatioThreshold));
+                if(currentTrade.getEntry().isBuy()) {
+                    satisfied = currentPrice.isGreaterThanOrEqual(entryPrice.plus(distance));
+                } else {
+                    satisfied = currentPrice.isLessThanOrEqual(entryPrice.minus(distance));
+                }
             }
         }
         traceIsSatisfied(index, satisfied);

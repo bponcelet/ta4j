@@ -31,7 +31,7 @@ import eu.verdelhan.ta4j.indicators.CachedIndicator;
  * <p>
  * A moving (i.e. over the time frame) simple linear regression (least squares).
  * y = slope * x + intercept
- * See also: http://introcs.cs.princeton.edu/java/97data/LinearRegression.java.html
+ * See also:
  */
 public class SimpleLinearRegressionIndicator extends CachedIndicator<Decimal> {
 
