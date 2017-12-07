@@ -22,7 +22,6 @@
  */
 package eu.verdelhan.ta4j.trading.rules;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Trade;
 import eu.verdelhan.ta4j.TradingRecord;

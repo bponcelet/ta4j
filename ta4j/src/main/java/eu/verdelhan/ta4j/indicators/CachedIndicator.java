@@ -112,7 +112,7 @@ public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
                 results.set(resultInnerIndex, result);
             }
         }
-        log.debug("computed value : {}", result);
+        log.trace("computed value : {}", result);
         return result;
     }
 
